@@ -20,7 +20,7 @@ def printImage(image):
 
 
 
-# check if index was parsed as arguement
+# check if index was parsed as argument
 selected = 0
 if (len(sys.argv) > 1):
     selected = int(sys.argv[1])
