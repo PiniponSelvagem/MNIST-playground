@@ -1,8 +1,3 @@
-"""
-python evaluate_quantized.py <index_of_the_test_image>
-if no arg, then index 0 will be used
-"""
-
 import sys
 
 import tensorflow as tf
@@ -10,7 +5,7 @@ import numpy as np
 
 from dataset import test_images, test_labels
 
-# Helper function to run inference on a TFLite model
+
 def run_tflite_model(tflite_file, test_image_indices):
     global test_images
 
@@ -41,32 +36,20 @@ def run_tflite_model(tflite_file, test_image_indices):
     return predictions
 
 
-# function to print image
-def printImage(selected):
-    _mnist = tf.keras.datasets.mnist
-    (_train_images, _train_labels), (_test_images, _test_labels) = _mnist.load_data()
-    _image = _test_images[selected]
+# Helper function to evaluate a TFLite model on all images
+def evaluate_model(tflite_file, model_type):
+    global test_images
+    global test_labels
 
-    arr = _image.tolist()
-    print('\n'.join([''.join(['{:4}'.format(col) for col in row]) for row in arr]))
+    test_image_indices = range(test_images.shape[0])
+    predictions = run_tflite_model(tflite_file, test_image_indices)
+
+    accuracy = (np.sum(test_labels== predictions) * 100) / len(test_images)
+
+    print('%s model accuracy is %.4f%% (Number of test samples=%d)' % (
+        model_type, accuracy, len(test_images)))
 
 
 
-
-
-# check if index was parsed as argument
-selected = 0
-if (len(sys.argv) > 1):
-    selected = int(sys.argv[1])
-
-# load test images
-image = test_images[selected]
-
-# print selected image
-printImage(image)
-
-# Predict class
-predictions = run_tflite_model("models/model_quantized.tflite", [selected])
-
-# Return label data
-print("value predicted: "+str(predictions[0]))
+# evaluate all
+evaluate_model("models/model_quantized.tflite", "Quantized")

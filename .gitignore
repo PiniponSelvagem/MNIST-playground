@@ -127,4 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-/models
+/post_train_quant/models/
+/quant_aware_train/models/
+/mv/mnist_fl.tflite
+/mv/mnist_int.tflite
