@@ -1,5 +1,7 @@
 #from model import model
 from train import model
+from dataset import train_images
+
 
 import tensorflow as tf
 import numpy as np
@@ -8,21 +10,9 @@ import numpy as np
 
 
 def representative_data_gen():
-    """
     for input_value in tf.data.Dataset.from_tensor_slices(train_images).batch(1).take(100):
-        yield [input_value.astype]
-    """
-    for _ in range(255):
-        data = np.random.rand(1, 28, 28, 1)
-        yield [data.astype(np.float32)]
+        yield [input_value]
 
-
-
-
-
-# Load MNIST dataset
-mnist = tf.keras.datasets.mnist
-(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
 
 
 converter = tf.lite.TFLiteConverter.from_keras_model(model)

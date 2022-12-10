@@ -13,8 +13,12 @@ import numpy as np
 from keras.models import load_model
 
 
-def printImage(image):
-    arr = image.tolist()
+def printImage(selected):
+    _mnist = tf.keras.datasets.mnist
+    (_train_images, _train_labels), (_test_images, _test_labels) = _mnist.load_data()
+    _image = _test_images[selected]
+
+    arr = _image.tolist()
     print('\n'.join([''.join(['{:4}'.format(col) for col in row]) for row in arr]))
 
 
@@ -26,12 +30,11 @@ if (len(sys.argv) > 1):
     selected = int(sys.argv[1])
 
 # load test images
-mnist = tf.keras.datasets.mnist
-(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+from dataset import test_images
 image = test_images[selected]
 
 # print selected image
-printImage(image)
+printImage(selected)
 
 # Load trained model
 model = load_model('models/model.h5')

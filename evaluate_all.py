@@ -3,6 +3,7 @@ import sys
 import tensorflow as tf
 import numpy as np
 
+from dataset import test_images, test_labels
 
 
 def run_tflite_model(tflite_file, test_image_indices):
@@ -48,13 +49,6 @@ def evaluate_model(tflite_file, model_type):
     print('%s model accuracy is %.4f%% (Number of test samples=%d)' % (
         model_type, accuracy, len(test_images)))
 
-
-
-
-
-# load test images
-mnist = tf.keras.datasets.mnist
-(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
 
 
 # evaluate all

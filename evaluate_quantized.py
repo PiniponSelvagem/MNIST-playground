@@ -8,6 +8,7 @@ import sys
 import tensorflow as tf
 import numpy as np
 
+from dataset import test_images, test_labels
 
 # Helper function to run inference on a TFLite model
 def run_tflite_model(tflite_file, test_image_indices):
@@ -41,8 +42,12 @@ def run_tflite_model(tflite_file, test_image_indices):
 
 
 # function to print image
-def printImage(image):
-    arr = image.tolist()
+def printImage(selected):
+    _mnist = tf.keras.datasets.mnist
+    (_train_images, _train_labels), (_test_images, _test_labels) = _mnist.load_data()
+    _image = _test_images[selected]
+
+    arr = _image.tolist()
     print('\n'.join([''.join(['{:4}'.format(col) for col in row]) for row in arr]))
 
 
@@ -55,8 +60,6 @@ if (len(sys.argv) > 1):
     selected = int(sys.argv[1])
 
 # load test images
-mnist = tf.keras.datasets.mnist
-(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
 image = test_images[selected]
 
 # print selected image
