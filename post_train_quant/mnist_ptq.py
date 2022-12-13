@@ -146,3 +146,4 @@ def evaluate_model(tflite_file, model_type):
 
 # evaluate all
 evaluate_model("models/model_quantized.tflite", "Quantized")
+# Quantized model accuracy is 98.0800% (Number of test samples=10000)

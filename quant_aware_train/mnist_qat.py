@@ -35,52 +35,37 @@ train_images = train_images.astype(np.float32) / 255.0
 test_images = test_images.astype(np.float32) / 255.0
 
 
-# Train
-model.fit(
+
+
+
+import tensorflow_model_optimization as tfmot
+
+quantize_model = tfmot.quantization.keras.quantize_model
+
+# q_aware stands for for quantization aware.
+q_aware_model = quantize_model(model)
+
+# `quantize_model` requires a recompile.
+q_aware_model.compile(
+    optimizer='adam',
+    loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+    metrics=['accuracy']
+)
+
+q_aware_model.fit(
     train_images,
     train_labels,
-    epochs=5,
+    epochs=1,
     validation_data=(test_images, test_labels)
 )
 
-model.save('models/model.h5')
-
-
-
-
-
-
-
-
-
-
-def representative_data_gen():
-    for input_value in tf.data.Dataset.from_tensor_slices(train_images).batch(1).take(100):
-        yield [input_value]
-
-
-converter = tf.lite.TFLiteConverter.from_keras_model(model)
-converter.target_spec.supported_ops = [
-    tf.lite.OpsSet.TFLITE_BUILTINS, # enable TensorFlow Lite ops.
-    tf.lite.OpsSet.SELECT_TF_OPS # enable TensorFlow ops.
-]
-
-
-converter.optimizations = [tf.lite.Optimize.DEFAULT]
-converter.experimental_new_converter=True
-converter.representative_dataset = representative_data_gen
-# Ensure that if any ops can't be quantized, the converter throws an error
-converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8, tf.lite.OpsSet.SELECT_TF_OPS]
-#converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
-# Set the input and output tensors to uint8
-converter.inference_input_type = tf.uint8
-converter.inference_output_type = tf.uint8
 
 # Convert and Save the model
+converter = tf.lite.TFLiteConverter.from_keras_model(q_aware_model)
+converter.optimizations = [tf.lite.Optimize.DEFAULT]
+
 tflite_model = converter.convert()
 open("models/model_quantized.tflite", "wb").write(tflite_model)
-
-
 
 
 
@@ -146,3 +131,4 @@ def evaluate_model(tflite_file, model_type):
 
 # evaluate all
 evaluate_model("models/model_quantized.tflite", "Quantized")
+# Quantized model accuracy is 96.3300% (Number of test samples=10000)
